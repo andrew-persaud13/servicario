@@ -1,44 +1,35 @@
-
-
-
-
 export const isValidImage = value => {
+  const result = initChecks(value);
 
-  const result = initChecks(value)
+  if (result !== null) return result;
 
-  if(result !== null) return result
+  const validFormats = ['png', 'jpeg', 'jpg', 'svg'];
 
-  const validFormats = ['png', 'jpeg', 'jpg', 'svg']
+  const extension = value.split('.').pop();
 
-  const extension = value.split('.').pop()
-
-  return validFormats.includes(extension)
-}
-
+  return validFormats.includes(extension);
+};
 
 export const isValidUrl = value => {
-  const result = initChecks(value)
-  if(result !== null) return result
+  const result = initChecks(value);
+  if (result !== null) return result;
 
-  const pattern = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
+  const pattern = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
 
-  const regex = new RegExp(pattern)
+  const regex = new RegExp(pattern);
 
-  return value.match(regex) 
-
-}
+  return value.match(regex);
+};
 
 export const sameAs = (getValue, field) => value => {
-  const result = initChecks(value)
-  if(result !== null) return result
-  console.log(value === getValue(field));
-  return value === getValue(field)
-}
-
+  const result = initChecks(value);
+  if (result !== null) return result;
+  return value === getValue(field);
+};
 
 const initChecks = value => {
-  if (!value) return true
-  if (typeof value !== 'string') return false
+  if (!value) return true;
+  if (typeof value !== 'string') return false;
 
-  return null
-}
+  return null;
+};

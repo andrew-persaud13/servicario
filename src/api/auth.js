@@ -47,7 +47,4 @@ export const getUserProfile = uid =>
 
 export const createUserRef = uid => db.doc('profiles/' + uid);
 
-export const createRef = (collection, docId) =>
-  db.doc(`${collection}/${docId}`);
-
 export const logout = () => firebase.auth().signOut();

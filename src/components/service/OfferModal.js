@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useToasts } from 'react-toast-notifications';
+import Modal from '../Modal';
+import { createOffer } from 'api';
+import { createRef } from 'actions';
 
-import Modal from './Modal';
-
-const OfferModal = ({ service }) => {
+const OfferModal = ({ service, auth }) => {
+  const { addToast } = useToasts();
   const [offer, setOffer] = useState({
     fromUser: '',
     toUser: '',
@@ -17,13 +20,28 @@ const OfferModal = ({ service }) => {
     let price;
     if (name === 'time') {
       price = Math.round(value * service.price * 100) / 100;
+      return setOffer({ ...offer, [name]: value, price });
     }
-    setOffer({ ...offer, [name]: value, price });
+    setOffer({ ...offer, [name]: value });
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    alert(JSON.stringify(offer));
+  const handleSubmit = async done => {
+    const offerCopy = { ...offer };
+    offerCopy.fromUser = createRef('profiles', auth.user.uid);
+    offerCopy.toUser = createRef('profiles', service.user.uid);
+    offerCopy.service = createRef('services', service.id);
+    offerCopy.time = +offer.time;
+
+    await createOffer(offerCopy)
+      .then(_ => {
+        addToast('Offer successfully submitted!', {
+          appearance: 'success',
+          autoDismiss: 3000,
+        });
+      })
+      .catch(err => addToast(err, { appearance: 'error', autoDismiss: 3000 }));
+
+    done();
   };
   return (
     <Modal onModalSubmit={handleSubmit} openButtonText='Make an offer'>

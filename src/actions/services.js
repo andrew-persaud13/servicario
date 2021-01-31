@@ -6,7 +6,7 @@ import {
   FETCH_USER_SERVICES_SUCCESS,
 } from '../types';
 
-import * as api from '../api';
+import * as api from 'api';
 
 export const requestService = () => ({
   type: REQUEST_SERVICE,
@@ -22,13 +22,12 @@ export const fetchServices = () => dispatch => {
     .then(services => dispatch({ type: FETCH_SERVICES_SUCCESS, services }));
 };
 
-export const fetchUserServices = userId => dispatch => {
-  return api
+export const fetchUserServices = userId => dispatch =>
+  api
     .fetchUserServices(userId)
     .then(services =>
       dispatch({ type: FETCH_USER_SERVICES_SUCCESS, services })
     );
-};
 
 export const fetchServiceById = serviceId => (dispatch, getState) => {
   const lastService = getState().selectedService.item;
@@ -37,7 +36,7 @@ export const fetchServiceById = serviceId => (dispatch, getState) => {
   dispatch(requestService());
   return api.fetchServiceById(serviceId).then(async service => {
     //service.user = await api.getUserProfile(service.user);
-    const user = await service.user.get();
+    const user = await service.user.get(); //if you create a ref before storing the service
     service.user = user.data();
     service.user.id = user.id;
     dispatch({ type: FETCH_SERVICE_SUCCESS, service });
@@ -45,7 +44,7 @@ export const fetchServiceById = serviceId => (dispatch, getState) => {
 };
 
 export const createService = async (serviceData, userId) => {
-  serviceData.price = parseInt(serviceData.price, 10);
+  serviceData.price = parseInt(serviceData.price, 10); //massage the data first before sending it to api
   serviceData.user = api.createUserRef(userId);
   return api.createService(serviceData);
 };

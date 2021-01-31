@@ -1,29 +1,37 @@
-import React from 'react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { Provider  } from 'react-redux' 
-import { ToastProvider } from 'react-toast-notifications'
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { ToastProvider } from 'react-toast-notifications';
 
+import {
+  onAuthStateChanged,
+  storeAuthUser,
+  subscribeToMessages,
+  checkUserConnection,
+} from './actions';
 
-import { onAuthStateChanged, storeAuthUser } from './actions'
-
-
-
-import store from './store'
-import ServiceApp from 'ServiceApp'
-
-
+import store from './store';
+import ServiceApp from 'ServiceApp';
 
 class App extends React.Component {
- 
   componentDidMount() {
-    
     this.unsubscribeAuth = onAuthStateChanged(authUser => {
-      store.dispatch(storeAuthUser(authUser))
-    })
+      store.dispatch(storeAuthUser(authUser));
+
+      this.unsubFromCheckUserConnection = () => {};
+      if (authUser) {
+        this.unsubscribeMessages = store.dispatch(
+          subscribeToMessages(authUser.uid)
+        );
+        this.unsubFromCheckUserConnection = checkUserConnection(authUser.uid);
+      }
+    });
   }
 
   componentWillUnmount() {
-    this.unsubscribeAuth()
+    this.unsubscribeAuth();
+    this.unsubscribeMessages();
+    this.unsubFromCheckUserConnection();
   }
 
   render() {
@@ -36,7 +44,7 @@ class App extends React.Component {
         </ToastProvider>
       </Provider>
     );
- }
+  }
 }
 
 export default App;
